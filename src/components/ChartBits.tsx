@@ -6,6 +6,20 @@ export const AXIS = {
   axisLine: { stroke: 'var(--axis)' },
 }
 
+/** X-axis props that keep labels readable once there are many data points. */
+export function xAxisProps(pointCount: number) {
+  const crowded = pointCount > 8
+  return {
+    ...AXIS,
+    interval: crowded ? ('preserveStartEnd' as const) : 0,
+    angle: crowded ? -35 : 0,
+    textAnchor: crowded ? ('end' as const) : ('middle' as const),
+    height: crowded ? 52 : 30,
+    tick: { fontSize: crowded ? 11 : 12 },
+    dy: crowded ? 4 : 8,
+  }
+}
+
 export const GRID = { stroke: 'var(--grid)', vertical: false }
 
 interface TTRow {

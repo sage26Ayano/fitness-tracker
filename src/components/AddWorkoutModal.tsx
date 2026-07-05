@@ -37,41 +37,51 @@ export function AddWorkoutModal({ onClose, onAdded }: Props) {
     setSubmitError(null)
     setSuccess(null)
 
-    let parsed
+    let parsedList
     try {
-      parsed = parseWorkoutJson(json)
+      parsedList = parseWorkoutJson(json)
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'Failed to parse JSON.')
       return
     }
 
     setSubmitting(true)
-    const { data: inserted, error: workoutError } = await supabase
-      .from('workouts')
-      .insert(parsed.workout)
-      .select('id')
-      .single()
 
-    if (workoutError || !inserted) {
-      setSubmitting(false)
-      setSubmitError(workoutError?.message ?? 'Failed to insert workout.')
-      return
-    }
+    for (let i = 0; i < parsedList.length; i++) {
+      const parsed = parsedList[i]
+      const { data: inserted, error: workoutError } = await supabase
+        .from('workouts')
+        .insert(parsed.workout)
+        .select('id')
+        .single()
 
-    if (parsed.splits.length) {
-      const { error: splitsError } = await supabase
-        .from('workout_splits')
-        .insert(parsed.splits.map(s => ({ ...s, workout_id: inserted.id })))
-
-      if (splitsError) {
+      if (workoutError || !inserted) {
         setSubmitting(false)
-        setSubmitError(`Workout saved, but splits failed: ${splitsError.message}`)
+        setSubmitError(
+          `Workout ${i + 1}/${parsedList.length} failed: ${workoutError?.message ?? 'Failed to insert workout.'}`,
+        )
         return
+      }
+
+      if (parsed.splits.length) {
+        const { error: splitsError } = await supabase
+          .from('workout_splits')
+          .insert(parsed.splits.map(s => ({ ...s, workout_id: inserted.id })))
+
+        if (splitsError) {
+          setSubmitting(false)
+          setSubmitError(`Workout ${i + 1}/${parsedList.length} saved, but splits failed: ${splitsError.message}`)
+          return
+        }
       }
     }
 
     setSubmitting(false)
-    setSuccess(`Added ${parsed.workout.workout_date} (${parsed.workout.activity_type}).`)
+    setSuccess(
+      parsedList.length === 1
+        ? `Added ${parsedList[0].workout.workout_date} (${parsedList[0].workout.activity_type}).`
+        : `Added ${parsedList.length} workouts.`,
+    )
     setJson('')
     onAdded()
   }
@@ -117,12 +127,17 @@ export function AddWorkoutModal({ onClose, onAdded }: Props) {
           </form>
         ) : (
           <form className="modal-form" onSubmit={handleSubmit}>
-            <p className="hint">Paste the workout JSON (same format as your export files).</p>
+            <p className="hint">
+              Paste the workout JSON (same format as your export files). A single workout object
+              or an array of them is accepted.
+            </p>
             <textarea
               className="json-input"
               value={json}
               onChange={e => setJson(e.target.value)}
-              placeholder='{"activity": {...}, "summary": {...}, "splits": [...]}'
+              placeholder='{"activity": {...}, "summary": {...}, "splits": [...]}
+or
+[{"activity": {...}, ...}, {"activity": {...}, ...}]'
               rows={14}
               required
               autoFocus

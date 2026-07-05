@@ -2,6 +2,27 @@ import { useCallback, useEffect, useState } from 'react'
 import { supabase, configured } from '../lib/supabase'
 import type { Run, Workout } from '../lib/types'
 
+const MONTHS = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+]
+
+/** "2026-07-05" -> "July 05" */
+function formatDateLabel(isoDate: string): string {
+  const [, month, day] = isoDate.split('-')
+  return `${MONTHS[Number(month) - 1]} ${day}`
+}
+
 interface State {
   runs: Run[]
   loading: boolean
@@ -46,7 +67,7 @@ export function useWorkouts() {
               .map(s => ({ ...s, distance_km: Number(s.distance_km) }))
               .sort((a, b) => a.split_number - b.split_number),
             runKey: w.workout_date + suffix,
-            label: w.workout_date.slice(5) + suffix,
+            label: formatDateLabel(w.workout_date) + suffix,
           }
         })
         setState({ runs, loading: false, error: null })

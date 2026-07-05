@@ -15,7 +15,7 @@ import {
 } from 'recharts'
 import type { Run } from '../lib/types'
 import { fmtDuration, fmtInt, fmtKm, fmtPace } from '../lib/format'
-import { AXIS, Card, EmptyNote, GRID, makeTooltip } from './ChartBits'
+import { AXIS, Card, EmptyNote, GRID, makeTooltip, xAxisProps } from './ChartBits'
 import { useCountUp } from '../hooks/useCountUp'
 
 function Tile({
@@ -180,9 +180,9 @@ export function OverviewTab({ runs }: { runs: Run[] }) {
       <div className="grid-2">
         <Card title="Daily distance">
           <ResponsiveContainer width="100%" height={230}>
-            <BarChart data={data} margin={{ top: 4, right: 8, left: -12, bottom: 0 }}>
+            <BarChart data={data} margin={{ top: 4, right: 8, left: -12, bottom: 12 }}>
               <CartesianGrid {...GRID} />
-              <XAxis dataKey="label" {...AXIS} />
+              <XAxis dataKey="label" {...xAxisProps(data.length)} />
               <YAxis {...AXIS} unit=" km" />
               <Tooltip
                 cursor={{ fill: 'color-mix(in srgb, var(--ink) 5%, transparent)' }}
@@ -195,9 +195,9 @@ export function OverviewTab({ runs }: { runs: Run[] }) {
 
         <Card title="Avg pace" hint="↑ faster (axis reversed)">
           <ResponsiveContainer width="100%" height={230}>
-            <LineChart data={data} margin={{ top: 4, right: 8, left: -8, bottom: 0 }}>
+            <LineChart data={data} margin={{ top: 4, right: 8, left: -8, bottom: 12 }}>
               <CartesianGrid {...GRID} />
-              <XAxis dataKey="label" {...AXIS} />
+              <XAxis dataKey="label" {...xAxisProps(data.length)} />
               <YAxis
                 {...AXIS}
                 reversed
@@ -221,9 +221,9 @@ export function OverviewTab({ runs }: { runs: Run[] }) {
 
         <Card title="Calories burned">
           <ResponsiveContainer width="100%" height={230}>
-            <BarChart data={data} margin={{ top: 4, right: 8, left: -8, bottom: 0 }}>
+            <BarChart data={data} margin={{ top: 4, right: 8, left: -8, bottom: 12 }}>
               <CartesianGrid {...GRID} />
-              <XAxis dataKey="label" {...AXIS} />
+              <XAxis dataKey="label" {...xAxisProps(data.length)} />
               <YAxis {...AXIS} />
               <Tooltip
                 cursor={{ fill: 'color-mix(in srgb, var(--ink) 5%, transparent)' }}
@@ -237,9 +237,9 @@ export function OverviewTab({ runs }: { runs: Run[] }) {
         <Card title="Heart rate">
           {data.some(d => d.avgHr != null) ? (
             <ResponsiveContainer width="100%" height={230}>
-              <LineChart data={data} margin={{ top: 4, right: 8, left: -12, bottom: 0 }}>
+              <LineChart data={data} margin={{ top: 4, right: 8, left: -12, bottom: 12 }}>
                 <CartesianGrid {...GRID} />
-                <XAxis dataKey="label" {...AXIS} />
+                <XAxis dataKey="label" {...xAxisProps(data.length)} />
                 <YAxis {...AXIS} domain={['dataMin - 10', 'dataMax + 10']} unit=" bpm" />
                 <Tooltip
                   content={makeTooltip((k, v) => ({
@@ -276,9 +276,9 @@ export function OverviewTab({ runs }: { runs: Run[] }) {
 
       <Card title="Cumulative distance">
         <ResponsiveContainer width="100%" height={190}>
-          <AreaChart data={data} margin={{ top: 4, right: 8, left: -12, bottom: 0 }}>
+          <AreaChart data={data} margin={{ top: 4, right: 8, left: -12, bottom: 12 }}>
             <CartesianGrid {...GRID} />
-            <XAxis dataKey="label" {...AXIS} />
+            <XAxis dataKey="label" {...xAxisProps(data.length)} />
             <YAxis {...AXIS} unit=" km" />
             <Tooltip
               content={makeTooltip((_k, v) => ({ label: 'Total', value: `${fmtKm(v)} km`, color: 'var(--series-5)' }))}
@@ -301,9 +301,9 @@ export function OverviewTab({ runs }: { runs: Run[] }) {
           hint="Minutes per intensity zone, per run (from FitShow's training-effect bars)"
         >
           <ResponsiveContainer width="100%" height={240}>
-            <BarChart data={data} margin={{ top: 4, right: 8, left: -8, bottom: 0 }}>
+            <BarChart data={data} margin={{ top: 4, right: 8, left: -8, bottom: 12 }}>
               <CartesianGrid {...GRID} />
-              <XAxis dataKey="label" {...AXIS} />
+              <XAxis dataKey="label" {...xAxisProps(data.length)} />
               <YAxis {...AXIS} unit=" min" />
               <Tooltip
                 cursor={{ fill: 'color-mix(in srgb, var(--ink) 5%, transparent)' }}

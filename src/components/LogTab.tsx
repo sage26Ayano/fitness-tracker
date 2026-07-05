@@ -18,7 +18,7 @@ import {
   hrZone,
   paceZone,
 } from '../lib/format'
-import { AXIS, Card, EmptyNote, GRID, makeTooltip } from './ChartBits'
+import { AXIS, Card, EmptyNote, GRID, makeTooltip, xAxisProps } from './ChartBits'
 
 /** ISO week start (Monday) for a YYYY-MM-DD date */
 function weekStart(iso: string): string {
@@ -137,9 +137,9 @@ export function LogTab({ runs }: { runs: Run[] }) {
       <Card title="Weekly volume" hint="Total distance per week (Mon–Sun)">
         {weeklyChart.length ? (
           <ResponsiveContainer width="100%" height={190}>
-            <BarChart data={weeklyChart} margin={{ top: 4, right: 8, left: -12, bottom: 0 }}>
+            <BarChart data={weeklyChart} margin={{ top: 4, right: 8, left: -12, bottom: 12 }}>
               <CartesianGrid {...GRID} />
-              <XAxis dataKey="label" {...AXIS} />
+              <XAxis dataKey="label" {...xAxisProps(weeklyChart.length)} />
               <YAxis {...AXIS} unit=" km" />
               <Tooltip
                 cursor={{ fill: 'color-mix(in srgb, var(--ink) 5%, transparent)' }}

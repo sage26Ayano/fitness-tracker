@@ -74,14 +74,35 @@ function hmsToSeconds(hms: string | undefined): number | null {
   return null
 }
 
-export function parseWorkoutJson(raw: string): { workout: WorkoutInsert; splits: SplitInsert[] } {
-  let data: RawWorkout
+export function parseWorkoutJson(
+  raw: string,
+): { workout: WorkoutInsert; splits: SplitInsert[] }[] {
+  let parsed: unknown
   try {
-    data = JSON.parse(raw)
+    parsed = JSON.parse(raw)
   } catch {
     throw new Error('Invalid JSON — could not parse.')
   }
 
+  const entries: RawWorkout[] = Array.isArray(parsed) ? parsed : [parsed as RawWorkout]
+  if (!entries.length) throw new Error('No workouts found in JSON.')
+
+  return entries.map((data, i) => {
+    try {
+      return parseSingleWorkout(data)
+    } catch (err) {
+      throw new Error(
+        entries.length > 1
+          ? `Workout ${i + 1}: ${err instanceof Error ? err.message : String(err)}`
+          : err instanceof Error
+            ? err.message
+            : String(err),
+      )
+    }
+  })
+}
+
+function parseSingleWorkout(data: RawWorkout): { workout: WorkoutInsert; splits: SplitInsert[] } {
   if (!data.activity) throw new Error('Missing "activity" field.')
   if (!data.summary) throw new Error('Missing "summary" field.')
   if (!Array.isArray(data.splits)) throw new Error('Missing "splits" array.')
