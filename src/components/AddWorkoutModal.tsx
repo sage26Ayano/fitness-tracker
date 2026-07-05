@@ -88,7 +88,7 @@ export function AddWorkoutModal({ onClose, onAdded }: Props) {
 
   return (
     <div className="modal-backdrop" onClick={onClose}>
-      <div className="modal" onClick={e => e.stopPropagation()}>
+      <div className="modal modal-lg" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Add workout</h2>
           <button className="modal-close" onClick={onClose} aria-label="Close">
@@ -138,7 +138,7 @@ export function AddWorkoutModal({ onClose, onAdded }: Props) {
               placeholder='{"activity": {...}, "summary": {...}, "splits": [...]}
 or
 [{"activity": {...}, ...}, {"activity": {...}, ...}]'
-              rows={14}
+              rows={20}
               required
               autoFocus
             />

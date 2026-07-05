@@ -36,6 +36,7 @@ interface RawWorkout {
 }
 
 export interface WorkoutInsert {
+  raw_json: RawWorkout
   activity_type: string
   workout_date: string
   workout_time: string | null
@@ -124,6 +125,7 @@ function parseSingleWorkout(data: RawWorkout): { workout: WorkoutInsert; splits:
         : null
 
   const workout: WorkoutInsert = {
+    raw_json: data,
     activity_type: activity.type,
     workout_date: activity.date,
     workout_time: activity.time ?? null,

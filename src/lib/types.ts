@@ -10,6 +10,7 @@ export interface Split {
 
 export interface Workout {
   id: string
+  raw_json: Record<string, unknown> | null
   activity_type: string
   workout_date: string // YYYY-MM-DD
   workout_time: string | null
