@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
-import { useAuth } from '../hooks/useAuth'
 import { parseWorkoutJson } from '../lib/parseWorkoutJson'
 
 interface Props {
@@ -9,27 +8,10 @@ interface Props {
 }
 
 export function AddWorkoutModal({ onClose, onAdded }: Props) {
-  const { session, checking } = useAuth()
-
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [loginError, setLoginError] = useState<string | null>(null)
-  const [loggingIn, setLoggingIn] = useState(false)
-
   const [json, setJson] = useState('')
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState<string | null>(null)
-
-  async function handleLogin(e: React.FormEvent) {
-    e.preventDefault()
-    if (!supabase) return
-    setLoggingIn(true)
-    setLoginError(null)
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    setLoggingIn(false)
-    if (error) setLoginError(error.message)
-  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -96,37 +78,7 @@ export function AddWorkoutModal({ onClose, onAdded }: Props) {
           </button>
         </div>
 
-        {checking ? (
-          <div className="empty-note">Checking session…</div>
-        ) : !session ? (
-          <form className="modal-form" onSubmit={handleLogin}>
-            <p className="hint">Sign in to add a workout.</p>
-            <label>
-              Email
-              <input
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                required
-                autoFocus
-              />
-            </label>
-            <label>
-              Password
-              <input
-                type="password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                required
-              />
-            </label>
-            {loginError && <div className="modal-error">⚠️ {loginError}</div>}
-            <button type="submit" className="modal-submit" disabled={loggingIn}>
-              {loggingIn ? 'Signing in…' : 'Sign in'}
-            </button>
-          </form>
-        ) : (
-          <form className="modal-form" onSubmit={handleSubmit}>
+        <form className="modal-form" onSubmit={handleSubmit}>
             <p className="hint">
               Paste the workout JSON (same format as your export files). A single workout object
               or an array of them is accepted.
@@ -148,7 +100,6 @@ or
               {submitting ? 'Saving…' : 'Save workout'}
             </button>
           </form>
-        )}
       </div>
     </div>
   )

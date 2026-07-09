@@ -5,6 +5,7 @@ import { OverviewTab } from './components/OverviewTab'
 import { LogTab } from './components/LogTab'
 import { SplitsTab } from './components/SplitsTab'
 import { AddWorkoutModal } from './components/AddWorkoutModal'
+import { LoginPage } from './components/LoginPage'
 import { supabase } from './lib/supabase'
 
 type Preset = '7d' | '30d' | '90d' | 'all' | 'custom'
@@ -17,7 +18,7 @@ function shiftDays(iso: string, days: number): string {
 }
 
 export default function App() {
-  const { session } = useAuth()
+  const { session, checking } = useAuth()
   const { runs, loading, error, configured, refresh } = useWorkouts()
   const [tab, setTab] = useState<Tab>('overview')
   const [preset, setPreset] = useState<Preset>('all')
@@ -50,6 +51,19 @@ export default function App() {
     () => runs.filter(r => r.workout_date >= start && r.workout_date <= end),
     [runs, start, end],
   )
+
+  if (checking) {
+    return (
+      <div className="empty-note" style={{ marginTop: '25vh' }}>
+        <div className="spinner" />
+        Loading…
+      </div>
+    )
+  }
+
+  if (!session) {
+    return <LoginPage />
+  }
 
   if (!configured) {
     return (

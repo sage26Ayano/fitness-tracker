@@ -859,6 +859,43 @@ tr.week-row td {
   margin: 80px auto;
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
 }
+/* ── login page ─────────────────────────────────────────── */
+.login-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+  margin-top: -28px; /* offset #root padding */
+}
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  margin: 0;
+  animation: pop-in 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.login-title {
+  font-size: 1.7rem;
+  font-weight: 800;
+  margin: 0 0 4px;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--ink) 25%, var(--series-1) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.login-subtitle {
+  color: var(--muted);
+  font-weight: 500;
+  background: none;
+  -webkit-text-fill-color: var(--muted);
+}
+.login-hint {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin: 0 0 18px;
+}
+
 .setup-card code {
   background: var(--page);
   border: 1px solid var(--grid);
