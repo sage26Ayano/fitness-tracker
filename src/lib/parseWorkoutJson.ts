@@ -147,19 +147,21 @@ function parseSingleWorkout(data: RawWorkout): { workout: WorkoutInsert; splits:
     light_seconds: hmsToSeconds(training_effect?.light),
   }
 
-  const splits: SplitInsert[] = data.splits.map(s => {
-    if (typeof s.split !== 'number' || typeof s.distance_km !== 'number' || !s.pace || !s.duration)
-      throw new Error(`Malformed split entry: ${JSON.stringify(s)}`)
-    if (typeof s.duration.total_seconds !== 'number')
-      throw new Error(`Split ${s.split} is missing "duration.total_seconds".`)
-    return {
-      split_number: s.split,
-      distance_km: s.distance_km,
-      pace_sec_per_km: s.pace.minutes * 60 + s.pace.seconds,
-      duration_seconds: s.duration.total_seconds,
-      is_fastest: Boolean(s.fastest),
-    }
-  })
+  const splits: SplitInsert[] = data.splits
+    .filter(s => s.distance_km > 0 && s.pace !== null)
+    .map(s => {
+      if (typeof s.split !== 'number' || typeof s.distance_km !== 'number' || !s.pace || !s.duration)
+        throw new Error(`Malformed split entry: ${JSON.stringify(s)}`)
+      if (typeof s.duration.total_seconds !== 'number')
+        throw new Error(`Split ${s.split} is missing "duration.total_seconds".`)
+      return {
+        split_number: s.split,
+        distance_km: s.distance_km,
+        pace_sec_per_km: s.pace.minutes * 60 + s.pace.seconds,
+        duration_seconds: s.duration.total_seconds,
+        is_fastest: Boolean(s.fastest),
+      }
+    })
 
   return { workout, splits }
 }
